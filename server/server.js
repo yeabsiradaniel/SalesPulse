@@ -15,15 +15,23 @@ import userRoutes from './routes/users.js';
 const app = express();
 const httpServer = createServer(app);
 
+const allowedOrigins = (origin, callback) => {
+  if (!origin || origin.includes('vercel.app') || origin.includes('localhost')) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 const io = new Server(httpServer, {
-  cors: { origin: process.env.CLIENT_URL, methods: ['GET', 'POST'] },
+  cors: { origin: allowedOrigins, methods: ['GET', 'POST'] },
 });
 
 // Make io accessible in routes
 app.set('io', io);
 
 // Middleware
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
 const limiter = rateLimit({

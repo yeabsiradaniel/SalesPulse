@@ -6,7 +6,8 @@ const useSocket = (event, callback) => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = io({ transports: ['websocket', 'polling'] });
+      const url = import.meta.env.VITE_API_URL || undefined;
+      socketRef.current = io(url, { transports: ['websocket', 'polling'] });
     }
 
     const socket = socketRef.current;
